@@ -24,18 +24,18 @@ def _validate_payment_type(payment: PaymentBaseModel) -> PaymentBaseModel:
     
     raise ValueError("Invalid Payment Type")
 
-
-class ItemOrderModel(BaseModel):
-    ''' Item Order Model '''
+class ItemOnOrderModel(BaseModel):
+    ''' Item on Order Model '''
     item: MenuItemModel = Field(description="Item")
     quantity: int = Field(description="Quantity")
 
-
 class OrderModel(BaseModel):
     ''' Order Model '''
-    id: int = Field(description="Order ID")
     total: float = Field(description="Total")
     created_at: str = Field(description="Created At")
-    items: List[ItemOrderModel] = Field(description="Items")
+    items: List[ItemOnOrderModel] = Field(description="Items")
     payment: Annotated[PaymentBaseModel, _validate_payment_type] = Field(description="Payment")
 
+class StoredOrderModel(OrderModel):
+    ''' Stored Order Model '''
+    id: int = Field(description="ID")
