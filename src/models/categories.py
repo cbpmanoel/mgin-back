@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-class Category(BaseModel):
+class CategoryModel(BaseModel):
     ''' Category Model '''
     id: int       = Field(description="Category ID")
     name: str     = Field(description="Category Name")

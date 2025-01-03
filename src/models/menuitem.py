@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, PositiveFloat
 
-class MenuItem(BaseModel):
+class MenuItemModel(BaseModel):
     ''' Menu Item Model '''
     cateory_id: int      = Field(description="Category ID")
     id: int              = Field(description="Menu Item ID")
