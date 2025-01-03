@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from src.models.itemrequestfilter import ItemRequestFilterModel
-from src.services.menu import MenuService
+from src.services import MenuService
+from src.services.dependencies import get_menu_service
 
 # Define the router
 _router = APIRouter(prefix="/menu", tags=["Menu"])
@@ -9,39 +10,47 @@ _router = APIRouter(prefix="/menu", tags=["Menu"])
 def get_router():
     return _router
 
-# Menu Service Session Object
-menu_service: MenuService = None
-def set_menu_service(service: MenuService):
-    global menu_service
-    menu_service = service
-    
-def get_menu_service() -> MenuService:
-    return menu_service
-
 # Router routes
 @_router.get("/")
-async def read_menu():
+async def read_menu(service: MenuService = Depends(get_menu_service)) -> dict:
     ''' Get Menu '''
-    return {"menu": "This is the menu"}
+    try:
+        items_count = await service.count_items()
+        categories_count = await service.count_categories()
+        return {"menu_items": items_count, "categories": categories_count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @_router.get("/categories")
-async def get_categories() -> dict:
+async def get_categories(service: MenuService = Depends(get_menu_service)) -> dict:
     '''
     Get Categories List
     '''
-    return {"categories": []}
+    try:
+        categories = await service.get_categories()
+        return {'data': categories}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @_router.get("/categories/{category_id}")
-async def get_category_items(category_id: int) -> dict:
+async def get_category_items(category_id: int, service: MenuService = Depends(get_menu_service)) -> dict:
     '''
     Get Category Items by Category ID
     '''
-    return {"category_id": category_id}
+    try:
+        items = await service.get_category_items(category_id)
+        return {'data': items}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @_router.get("/item")
-async def get_filtered_items(model: ItemRequestFilterModel) -> dict:
+async def get_filtered_items(model: ItemRequestFilterModel, service: MenuService = Depends(get_menu_service)) -> dict:
     '''
     Get Items with filters
     '''
-    return {"menu_items": []}
-    
+    try:
+        items = await service.get_filtered_items(model)
+        return {'data': items}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
