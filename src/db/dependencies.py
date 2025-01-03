@@ -7,5 +7,5 @@ async def get_db() -> DB:
     Returns:
         DB: Database instance
     '''
-    db = DB("localhost", 27017, "mgin-kiosk")
+    db = DB("kiosk_db", url="mongodb://root:root@localhost:27017")
     return db
