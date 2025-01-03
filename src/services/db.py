@@ -6,6 +6,30 @@ class DB:
         self.client = AsyncIOMotorClient(host, port)
         self.db = self.client[db_name]
         
+        
+    async def count_documents(self, collection_name: str) -> int:
+        '''
+        Count the number of documents in the collection
+        
+        Args:
+            collection_name (str): Collection Name
+            query (dict): Query to filter the documents. Default is {}.
+            
+        Returns:
+            int: Number of documents
+        '''
+        try:
+            collection = self.db[collection_name]
+            count = await collection.count_documents()
+            return count
+        except PyMongoError as e:
+            print(f"Database error counting documents in {collection_name}: {e}")
+            raise
+        except Exception as e:
+            print(f"Unexpected error counting documents in {collection_name}: {e}")
+            raise
+        
+        
     async def get_document(self, collection_name: str, query: dict) -> dict:
         '''
         Get a document from the collection
@@ -74,6 +98,7 @@ class DB:
         except Exception as e:
             print(f"Unexpected error inserting document into {collection_name}: {e}")
             raise
+    
     
     async def close(self) -> None:
         ''' Close the connection '''

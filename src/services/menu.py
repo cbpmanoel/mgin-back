@@ -24,6 +24,8 @@ class MenuService:
         try:
             for doc in await self.db.get_documents_list("categories"):
                 categories.append(CategoryModel(**doc))
+            return categories
+        
         except ValidationError as e:
             print(f"Validation Error fetching categories: {e}")
             raise e
@@ -33,8 +35,6 @@ class MenuService:
         except Exception as e:
             print(f"Unknown Error fetching categories: {e}")
             raise e
-
-        return categories
 
 
     async def get_category_items(self, category_id: int) -> List[MenuItemModel]:
@@ -52,6 +52,8 @@ class MenuService:
         try:
             for doc in await self.db.get_documents_list("menu_items", {"category_id": category_id}):
                 items.append(MenuItemModel(**doc))
+            return items
+        
         except ValidationError as e:
             print(f"Validation Error fetching categories: {e}")
             raise e
@@ -61,8 +63,6 @@ class MenuService:
         except Exception as e:
             print(f"Unknown Error fetching categories: {e}")
             raise e
-
-        return items
 
 
     async def get_filtered_items(
@@ -84,6 +84,8 @@ class MenuService:
         try:
             for doc in await self.db.get_documents_list("menu_items", query):
                 items.append(MenuItemModel(**doc))
+            return items
+                
         except ValidationError as e:
             print(f"Validation Error fetching categories: {e}")
             raise e
@@ -94,4 +96,38 @@ class MenuService:
             print(f"Unknown Error fetching categories: {e}")
             raise e
                 
-        return items
+    
+    async def count_categories(self) -> int:
+        """
+        Count Categories
+        
+        Returns:
+            int: Number of categories
+        """
+        try:
+            count = await self.db.count_documents("categories")
+            return count
+        except PyMongoError as e:
+            print(f"Database error counting categories: {e}")
+            raise
+        except Exception as e:
+            print(f"Unexpected error counting categories: {e}")
+            raise
+
+    
+    async def count_items(self) -> int:
+        """
+        Count Items
+        
+        Returns:
+            int: Number of items
+        """
+        try:
+            count = await self.db.count_documents("menu_items")
+            return count
+        except PyMongoError as e:
+            print(f"Database error counting items: {e}")
+            raise
+        except Exception as e:
+            print(f"Unexpected error counting items: {e}")
+            raise
