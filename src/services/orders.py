@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import ValidationError
 from pymongo.errors import PyMongoError
-from .db import DB
+from ..db import DB
 from ..models.order import OrderModel, StoredOrderModel
 
 class OrderService:
