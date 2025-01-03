@@ -28,6 +28,7 @@ class ItemOnOrderModel(BaseModel):
     ''' Item on Order Model '''
     item: MenuItemModel = Field(description="Item")
     quantity: int = Field(description="Quantity")
+    price_at_order: float = Field(description="Price at Order")
 
 class OrderModel(BaseModel):
     ''' Order Model '''
