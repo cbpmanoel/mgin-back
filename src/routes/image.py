@@ -15,8 +15,6 @@ async def get_image(image: str):
     '''
     Return the image
     '''
-    if not image:
-        raise HTTPException(status_code=400, detail="Image ID is required")
     if not image.endswith(".jpg"):
         raise HTTPException(status_code=400, detail="Invalid Image format. Accepted format: .jpg")
     
