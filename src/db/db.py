@@ -1,13 +1,24 @@
 import os
-from pymongo.errors import PyMongoError
+from pymongo.errors import PyMongoError, ConnectionFailure
 from motor.motor_asyncio import AsyncIOMotorClient
 
 class DB:
     def __init__(self, db_name: str, **kwargs):
+        """
+        Initialize the MongoDB connection.
 
+        Args:
+            db_name (str): Name of the database.
+            **kwargs: Additional arguments for the MongoDB connection.
+                - url (str): Full MongoDB connection URL.
+                - host (str): MongoDB host. Default is 'localhost'.
+                - port (int): MongoDB port. Default is 27017.
+                - username (str): MongoDB username.
+                - password (str): MongoDB password.
+        """
         if not db_name:
             raise ValueError("Database name is required")
-        
+
         # Get the URL from the kwargs or build it
         url = kwargs.get('url', None)
         if not url:
@@ -23,15 +34,41 @@ class DB:
                 
             url = f'mongodb://{credentials}{host}:{port}/'
             
+        # Set the attributes
+        self.db_name = db_name
+        self.url = url
+        self.client = None
+        self.db = None
+        self.init_successful = False
+        
+    def is_initialized(self) -> bool:
+        ''' Check if the database is initialized '''
+        return self.init_successful
+        
+    async def initialize(self):
+        ''' Async Initialization '''
         try:
-            self.client = AsyncIOMotorClient(url)
-            self.client.admin.command('ping')
-            self.db = self.client[db_name]
-        except Exception as e:
+            # Connect to the MongoDB server
+            self.client = AsyncIOMotorClient(self.url)
+            
+            # Test the connection by pinging the admin database
+            await self.client.admin.command('ping')
+            
+            # Set the database
+            self.db = self.client[self.db_name]
+            
+            # Set the initialized flag
+            self.init_successful = True
+            
+        except ConnectionFailure as e:
             raise ConnectionError(f"Failed to connect to MongoDB: {e}")
+        except PyMongoError as e:
+            raise ConnectionError(f"MongoDB error: {e}")
+        except Exception as e:
+            raise ConnectionError(f"Unexpected error: {e}")
         
         
-    async def count_documents(self, collection_name: str) -> int:
+    async def count_documents(self, collection_name: str, query: dict = {}) -> int:
         '''
         Count the number of documents in the collection
         
@@ -44,7 +81,7 @@ class DB:
         '''
         try:
             collection = self.db[collection_name]
-            count = await collection.count_documents()
+            count = await collection.count_documents(query)
             return count
         except PyMongoError as e:
             print(f"Database error counting documents in {collection_name}: {e}")
@@ -135,4 +172,6 @@ class DB:
     
     async def close(self) -> None:
         ''' Close the connection '''
-        await self.client.close()
+        if self.client is not None:
+            await self.client.close()
+            self.client = None

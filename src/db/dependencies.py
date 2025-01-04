@@ -7,5 +7,10 @@ async def get_db() -> DB:
     Returns:
         DB: Database instance
     '''
-    db = DB("kiosk_db", url="mongodb://root:root@localhost:27017")
-    return db
+    # Create a new instance of the database
+    db_instance = DB("kiosk_db", url="mongodb://root:root@localhost:27017")
+    
+    # Initialize the database
+    await db_instance.initialize()
+    
+    return db_instance
