@@ -1,6 +1,12 @@
 import os
+import logging
 from pymongo.errors import PyMongoError, ConnectionFailure
 from motor.motor_asyncio import AsyncIOMotorClient
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
+
 
 class DBConnection:
     """
@@ -35,6 +41,7 @@ class DBConnection:
             ValueError: If the database name is not provided.
         """
         if not db_name:
+            logger.error("Database name is required")
             raise ValueError("Database name is required")
 
         # Get the URL from the kwargs or build it
@@ -65,6 +72,8 @@ class DBConnection:
         self.socket_timeout = socket_timeout
         self.connect_timeout = connect_timeout
         
+        logger.info(f"Initialized DBConnection for database: {self.db_name}")
+        
     def is_initialized(self) -> bool:
         """
         Check if the database connection is initialized.
@@ -81,7 +90,7 @@ class DBConnection:
         Raises:
             ConnectionError: If the connection to MongoDB fails.
         """
-        print(f"Connecting to MongoDB at {self.url}")
+        logger.info(f"Connecting to MongoDB at {self.url}")
         try:
             # Connect to the MongoDB server
             self.client = AsyncIOMotorClient(
@@ -99,11 +108,16 @@ class DBConnection:
             # Set the initialized flag
             self.init_successful = True
             
+            logger.info("Successfully connected to MongoDB")
+            
         except ConnectionFailure as e:
+            logger.error(f"Failed to connect to MongoDB: {e}")
             raise ConnectionError(f"Failed to connect to MongoDB: {e}")
         except PyMongoError as e:
+            logger.error(f"MongoDB error: {e}")
             raise ConnectionError(f"MongoDB error: {e}")
         except Exception as e:
+            logger.error(f"Unexpected error: {e}")
             raise ConnectionError(f"Unexpected error: {e}")
         
         
@@ -125,12 +139,13 @@ class DBConnection:
         try:
             collection = self.db[collection_name]
             count = await collection.count_documents(query)
+            logger.info(f"Counted {count} documents in collection: {collection_name}")
             return count
         except PyMongoError as e:
-            print(f"Database error counting documents in {collection_name}: {e}")
+            logger.error(f"Database error counting documents in {collection_name}: {e}")
             raise
         except Exception as e:
-            print(f"Unexpected error counting documents in {collection_name}: {e}")
+            logger.error(f"Unexpected error counting documents in {collection_name}: {e}")
             raise
         
         
@@ -152,12 +167,13 @@ class DBConnection:
         try:
             collection = self.db[collection_name]
             doc = await collection.find_one(query)
+            logger.info(f"Retrieved document from collection: {collection_name}")
             return doc
         except PyMongoError as e:
-            print(f"Database error fetching document from {collection_name}: {e}")
+            logger.error(f"Database error fetching document from {collection_name}: {e}")
             raise
         except Exception as e:
-            print(f"Unexpected error fetching document from {collection_name}: {e}")
+            logger.error(f"Unexpected error fetching document from {collection_name}: {e}")
             raise
     
     
@@ -191,12 +207,13 @@ class DBConnection:
             cursor = cursor.skip(skip).limit(limit)
             
             docs = await cursor.to_list()
+            logger.info(f"Retrieved {len(docs)} documents from collection: {collection_name}")
             return docs
         except PyMongoError as e:
-            print(f"Database error fetching documents from {collection_name}: {e}")
+            logger.error(f"Database error fetching documents from {collection_name}: {e}")
             raise
         except Exception as e:
-            print(f"Unexpected error fetching documents from {collection_name}: {e}")
+            logger.error(f"Unexpected error fetching documents from {collection_name}: {e}")
             raise
         
 
@@ -217,12 +234,13 @@ class DBConnection:
         """
         try:
             result = await self.db[collection_name].insert_one(data)
+            logger.info(f"Inserted document into collection: {collection_name}")
             return str(result.inserted_id)
         except PyMongoError as e:
-            print(f"Database error inserting document into {collection_name}: {e}")
+            logger.error(f"Database error inserting document into {collection_name}: {e}")
             raise
         except Exception as e:
-            print(f"Unexpected error inserting document into {collection_name}: {e}")
+            logger.error(f"Unexpected error inserting document into {collection_name}: {e}")
             raise
     
     
@@ -236,3 +254,4 @@ class DBConnection:
         if self.client is not None:
             self.client.close()
             self.client = None
+            logger.info("Closed MongoDB connection")
