@@ -10,6 +10,7 @@ def get_db_settings() -> dict:
     '''
     if __debug__:
         return {
+            'db_name': 'kiosk_db',
             'host': 'localhost',
             'port': 27017,
             'db_name': 'test_db',
@@ -18,6 +19,7 @@ def get_db_settings() -> dict:
         }
         
     return {
+        'db_name': os.environ.get('MONGO_DB_NAME', 'kiosk_db'),
         'host': os.environ.get('MONGO_HOST', 'localhost'),
         'port': int(os.environ.get('MONGO_PORT', 27017)),
         'db_name': os.environ.get('MONGO_DB_NAME', None),

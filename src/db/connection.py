@@ -25,14 +25,18 @@ class DBConnection:
             host = kwargs.get('host', 'localhost')
             port = kwargs.get('port', 27017)
             
-            username = kwargs.get('username', os.getenv('MONGO_USERNAME', None))
-            password = kwargs.get('password', os.getenv('MONGO_PASSWORD', None))
+            username = kwargs.get('username', None)
+            password = kwargs.get('password', None)
 
             credentials = ""
             if username and password:
                 credentials = f'{username}:{password}@'
                 
             url = f'mongodb://{credentials}{host}:{port}/'
+        
+        # Get the timeouts
+        socket_timeout  = kwargs.get('socket_timeout', 5000)
+        connect_timeout = kwargs.get('connect_timeout', 5000)
             
         # Set the attributes
         self.db_name = db_name
@@ -40,6 +44,8 @@ class DBConnection:
         self.client = None
         self.db = None
         self.init_successful = False
+        self.socket_timeout = socket_timeout
+        self.connect_timeout = connect_timeout
         
     def is_initialized(self) -> bool:
         ''' Check if the database is initialized '''
@@ -47,9 +53,14 @@ class DBConnection:
         
     async def initialize(self):
         ''' Async Initialization '''
+        print(f"Connecting to MongoDB at {self.url}")
         try:
             # Connect to the MongoDB server
-            self.client = AsyncIOMotorClient(self.url)
+            self.client = AsyncIOMotorClient(
+                self.url,
+                connectTimeoutMS=self.connect_timeout,
+                socketTimeoutMS=self.socket_timeout
+            )
             
             # Test the connection by pinging the admin database
             await self.client.admin.command('ping')
