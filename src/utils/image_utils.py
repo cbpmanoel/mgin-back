@@ -1,26 +1,33 @@
-import os, sys
-from typing import Optional
+import os
 from pathlib import Path
+from typing import Optional
+from src.utils.constants import IMAGES_FOLDER
 
-def get_image_abspath(image: str) -> Optional[str]:
+def get_image_abspath(image: str, base_dir: Optional[str] = None) -> Optional[str]:
     '''
-    Get the path of an image
-    
+    Get the absolute path of an image file.
+
     Args:
-        image (str): Image filename with extension
-    
+        image (str): Image filename with extension.
+        base_dir (Optional[str]): Base directory for the images folder. If None, the script's directory is used.
+
     Returns:
-        Optional[str]: Absolute path of the image or None if not found
+        Optional[str]: Absolute path of the image or None if not found.
     '''
-    
     if not image:
         return None
     
-    images_folder = os.path.join(os.path.abspath(sys.argv[0]), 'resources/images')
-    image_path    = Path(os.path.join(images_folder, image))
-    
-    # Check if the image exists and is a file
-    if image_path.exists() and image_path.is_file():
-        return image_path
-    
-    return None
+    try:
+        
+        if base_dir is None:
+            base_dir = Path(os.getcwd()) / IMAGES_FOLDER
+        
+        image_path = Path(base_dir) / image
+        
+        # Check if the image file exists
+        if image_path.exists() and image_path.is_file():
+            return str(image_path)
+        
+        return None
+    except Exception as e:
+        return None
