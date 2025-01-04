@@ -45,7 +45,7 @@ async def get_category_items(category_id: int, service: MenuService = Depends(ge
         raise HTTPException(status_code=500, detail=str(e))
 
 @_router.get("/item")
-async def get_filtered_items(model: ItemRequestFilterModel, service: MenuService = Depends(get_menu_service)) -> dict:
+async def get_filtered_items(model: ItemRequestFilterModel = Depends(), service: MenuService = Depends(get_menu_service)) -> dict:
     '''
     Get Items with filters
     '''
