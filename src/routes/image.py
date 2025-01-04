@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
-from ..services.images import get_image_abspath
+from ..utils.image_utils import get_image_abspath
 
 # Define the router
 _router = APIRouter(prefix="/image", tags=["Image"])
