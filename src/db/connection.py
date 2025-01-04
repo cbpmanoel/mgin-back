@@ -3,6 +3,19 @@ from pymongo.errors import PyMongoError, ConnectionFailure
 from motor.motor_asyncio import AsyncIOMotorClient
 
 class DBConnection:
+    """
+    A class to manage asynchronous MongoDB connections and operations.
+
+    Attributes:
+        db_name (str): Name of the database.
+        url (str): MongoDB connection URL.
+        client (AsyncIOMotorClient): MongoDB client instance.
+        db (Database): MongoDB database instance.
+        init_successful (bool): Flag to indicate successful initialization.
+        socket_timeout (int): Socket timeout in milliseconds.
+        connect_timeout (int): Connection timeout in milliseconds.
+    """
+
     def __init__(self, db_name: str, **kwargs):
         """
         Initialize the MongoDB connection.
@@ -15,6 +28,11 @@ class DBConnection:
                 - port (int): MongoDB port. Default is 27017.
                 - username (str): MongoDB username.
                 - password (str): MongoDB password.
+                - socket_timeout (int): Socket timeout in milliseconds. Default is 5000.
+                - connect_timeout (int): Connection timeout in milliseconds. Default is 5000.
+
+        Raises:
+            ValueError: If the database name is not provided.
         """
         if not db_name:
             raise ValueError("Database name is required")
@@ -48,11 +66,21 @@ class DBConnection:
         self.connect_timeout = connect_timeout
         
     def is_initialized(self) -> bool:
-        ''' Check if the database is initialized '''
+        """
+        Check if the database connection is initialized.
+
+        Returns:
+            bool: True if the database is initialized, False otherwise.
+        """
         return self.init_successful
         
     async def initialize(self):
-        ''' Async Initialization '''
+        """
+        Asynchronously initialize the MongoDB connection.
+
+        Raises:
+            ConnectionError: If the connection to MongoDB fails.
+        """
         print(f"Connecting to MongoDB at {self.url}")
         try:
             # Connect to the MongoDB server
@@ -80,16 +108,20 @@ class DBConnection:
         
         
     async def count_documents(self, collection_name: str, query: dict = {}) -> int:
-        '''
-        Count the number of documents in the collection
-        
+        """
+        Count the number of documents in a collection.
+
         Args:
-            collection_name (str): Collection Name
+            collection_name (str): Name of the collection.
             query (dict): Query to filter the documents. Default is {}.
-            
+
         Returns:
-            int: Number of documents
-        '''
+            int: Number of documents matching the query.
+
+        Raises:
+            PyMongoError: If a database error occurs.
+            Exception: If an unexpected error occurs.
+        """
         try:
             collection = self.db[collection_name]
             count = await collection.count_documents(query)
@@ -103,16 +135,20 @@ class DBConnection:
         
         
     async def get_document(self, collection_name: str, query: dict) -> dict:
-        '''
-        Get a document from the collection
-        
+        """
+        Retrieve a single document from a collection.
+
         Args:
-            collection_name (str): Collection Name
-            query (dict): Query to filter the document
-            
+            collection_name (str): Name of the collection.
+            query (dict): Query to filter the document.
+
         Returns:
-            dict: Document
-        '''
+            dict: The document matching the query.
+
+        Raises:
+            PyMongoError: If a database error occurs.
+            Exception: If an unexpected error occurs.
+        """
         try:
             collection = self.db[collection_name]
             doc = await collection.find_one(query)
@@ -126,18 +162,23 @@ class DBConnection:
     
     
     async def get_documents_list(self, collection_name: str, query: dict = {}, skip: int = 0, limit: int = 20, sort: list = None) -> list:
-        '''
-        Get documents from the collection
-        
+        """
+        Retrieve a list of documents from a collection.
+
         Args:
-            collection_name (str): Collection Name
+            collection_name (str): Name of the collection.
             query (dict): Query to filter the documents. Default is {}.
             skip (int): Number of documents to skip. Default is 0.
-            limit (int): Max length of the list. Default is 20.
+            limit (int): Maximum number of documents to return. Default is 20.
             sort (list): List of tuples specifying the field(s) to sort by and the direction. Default is None.
+
         Returns:
-            list: List of documents
-        '''
+            list: List of documents matching the query.
+
+        Raises:
+            PyMongoError: If a database error occurs.
+            Exception: If an unexpected error occurs.
+        """
         try:
             collection = self.db[collection_name]
             cursor = collection.find(query)
@@ -160,16 +201,20 @@ class DBConnection:
         
 
     async def insert_one(self, collection_name: str, data: dict) -> str:
-        '''
-        Insert a document into the collection
+        """
+        Insert a single document into a collection.
 
         Args:
-            collection_name (str): Collection Name
-            data (dict): Data
+            collection_name (str): Name of the collection.
+            data (dict): Document to insert.
 
         Returns:
-            str: Inserted ID
-        '''
+            str: The inserted document's ID.
+
+        Raises:
+            PyMongoError: If a database error occurs.
+            Exception: If an unexpected error occurs.
+        """
         try:
             result = await self.db[collection_name].insert_one(data)
             return str(result.inserted_id)
@@ -182,7 +227,12 @@ class DBConnection:
     
     
     def close(self) -> None:
-        ''' Close the connection '''
+        """
+        Close the MongoDB connection.
+
+        Returns:
+            None
+        """
         if self.client is not None:
             self.client.close()
             self.client = None
