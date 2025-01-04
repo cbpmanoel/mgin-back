@@ -170,8 +170,8 @@ class DB:
             raise
     
     
-    async def close(self) -> None:
+    def close(self) -> None:
         ''' Close the connection '''
         if self.client is not None:
-            await self.client.close()
+            self.client.close()
             self.client = None
