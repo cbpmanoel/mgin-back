@@ -1,14 +1,14 @@
 from typing import List, Optional
 from pydantic import ValidationError
 from pymongo.errors import PyMongoError
-from ..db import DB
+from ..db import DBConnection
 from ..models.categories import CategoryModel
 from ..models.menuitem import MenuItemModel
 from ..models.itemrequestfilter import ItemRequestFilterModel
 
 
 class MenuService:
-    def __init__(self, db: DB):
+    def __init__(self, db: DBConnection):
         self.db = db
 
 

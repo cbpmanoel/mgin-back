@@ -1,11 +1,11 @@
 from typing import List, Optional
 from pydantic import ValidationError
 from pymongo.errors import PyMongoError
-from ..db import DB
+from ..db import DBConnection
 from ..models.order import OrderModel, StoredOrderModel
 
 class OrderService:
-    def __init__(self, db: DB):
+    def __init__(self, db: DBConnection):
         self.db = db
         
         

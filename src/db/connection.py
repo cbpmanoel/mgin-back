@@ -2,7 +2,7 @@ import os
 from pymongo.errors import PyMongoError, ConnectionFailure
 from motor.motor_asyncio import AsyncIOMotorClient
 
-class DB:
+class DBConnection:
     def __init__(self, db_name: str, **kwargs):
         """
         Initialize the MongoDB connection.
