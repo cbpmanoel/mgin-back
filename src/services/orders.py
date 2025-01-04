@@ -4,6 +4,11 @@ from pymongo.errors import PyMongoError
 from ..db import DBConnection
 from ..models.order import OrderModel
 from bson import ObjectId
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 
 class OrderService:
@@ -22,6 +27,7 @@ class OrderService:
             db (DBConnection): An instance of the database connection.
         """
         self.db = db
+        logger.info("OrderService initialized with database connection")
         
         
     async def create_order(self, order: OrderModel) -> str:
@@ -40,22 +46,25 @@ class OrderService:
             Exception: If an unexpected error occurs.
         """
         try:
+            logger.info("Creating a new order")
+            
             # Convert dict to OrderModel if necessary
             if isinstance(order, dict):
                 order = OrderModel(**order)
             
             # Insert the order into the database
             order_id = await self.db.insert_one("orders", order.model_dump())
+            logger.info(f"Order created successfully with ID: {order_id}")
             return order_id
         
         except ValidationError as e:
-            print(f"Validation Error creating order: {e}")
+            logger.error(f"Validation Error creating order: {e}")
             raise e
         except PyMongoError as e:
-            print(f"Database Error creating order: {e}")
+            logger.error(f"Database Error creating order: {e}")
             raise e
         except Exception as e:
-            print(f"Unknown Error creating order: {e}")
+            logger.error(f"Unknown Error creating order: {e}")
             raise e
         
         
@@ -72,22 +81,27 @@ class OrderService:
             Exception: If an unexpected error occurs.
         """
         try:
+            logger.info("Fetching all orders")
             orders: List[OrderModel] = []
+            
+            # Fetch all orders from the database
             for doc in await self.db.get_documents_list("orders"):
                 if doc:  
                     # Convert dict to OrderModel if necessary
                     docToStore = OrderModel(**doc) if isinstance(doc, dict) else doc
                     orders.append(docToStore)
+                    
+            logger.info(f"Fetched {len(orders)} orders")
             return orders
         
         except ValidationError as e:
-            print(f"Validation Error fetching orders: {e}")
+            logger.error(f"Validation Error fetching orders: {e}")
             raise e
         except PyMongoError as e:
-            print(f"Database Error fetching orders: {e}")
+            logger.error(f"Database Error fetching orders: {e}")
             raise e
         except Exception as e:
-            print(f"Unknown Error fetching orders: {e}")
+            logger.error(f"Unknown Error fetching orders: {e}")
             raise e
         
         
@@ -107,15 +121,22 @@ class OrderService:
             Exception: If an unexpected error occurs.
         """
         try:
+            logger.info(f"Fetching order with ID: {order_id}")
             doc = await self.db.get_document("orders", {"_id": ObjectId(order_id)})
-            return OrderModel(**doc) if doc else None
+            
+            if not doc:
+                logger.warning(f"Order not found with ID: {order_id}")
+                return None
+            
+            logger.info(f"Fetched order with ID: {order_id}")
+            return OrderModel(**doc)
         
         except ValidationError as e:
-            print(f"Validation Error fetching order: {e}")
+            logger.error(f"Validation Error fetching order: {e}")
             raise e
         except PyMongoError as e:
-            print(f"Database Error fetching order: {e}")
+            logger.error(f"Database Error fetching order: {e}")
             raise e
         except Exception as e:
-            print(f"Unknown Error fetching order: {e}")
+            logger.error(f"Unknown Error fetching order: {e}")
             raise e

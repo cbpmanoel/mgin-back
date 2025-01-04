@@ -5,6 +5,11 @@ from ..db import DBConnection
 from ..models.categories import CategoryModel
 from ..models.menuitem import MenuItemModel
 from ..models.itemrequestfilter import ItemRequestFilterModel
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 
 class MenuService:
@@ -23,6 +28,7 @@ class MenuService:
             db (DBConnection): An instance of the database connection.
         """
         self.db = db
+        logger.info("MenuService initialized with database connection")
 
 
     async def get_categories(self) -> List[CategoryModel]:
@@ -40,18 +46,21 @@ class MenuService:
         categories: List[CategoryModel] = []
 
         try:
+            logger.info("Fetching all categories")
             for doc in await self.db.get_documents_list("categories"):
                 categories.append(CategoryModel(**doc))
+                
+            logger.info(f"Fetched {len(categories)} categories")
             return categories
         
         except ValidationError as e:
-            print(f"Validation Error fetching categories: {e}")
+            logger.error(f"Validation Error fetching categories: {e}")
             raise e
         except PyMongoError as e:
-            print(f"Database Error fetching categories: {e}")
+            logger.error(f"Database Error fetching categories: {e}")
             raise e
         except Exception as e:
-            print(f"Unknown Error fetching categories: {e}")
+            logger.error(f"Unknown Error fetching categories: {e}")
             raise e
 
 
@@ -73,18 +82,21 @@ class MenuService:
         items: List[MenuItemModel] = []
 
         try:
+            logger.info(f"Fetching items for category ID: {category_id}")
             for doc in await self.db.get_documents_list("menu_items", {"category_id": category_id}):
                 items.append(MenuItemModel(**doc))
+                
+            logger.info(f"Fetched {len(items)} items for category ID: {category_id}")
             return items
         
         except ValidationError as e:
-            print(f"Validation Error fetching category items: {e}")
+            logger.error(f"Validation Error fetching category items: {e}")
             raise e
         except PyMongoError as e:
-            print(f"Database Error fetching category items: {e}")
+            logger.error(f"Database Error fetching category items: {e}")
             raise e
         except Exception as e:
-            print(f"Unknown Error fetching category items: {e}")
+            logger.error(f"Unknown Error fetching category items: {e}")
             raise e
         
         
@@ -104,18 +116,24 @@ class MenuService:
             Exception: If an unexpected error occurs.
         """
         try:
+            logger.info(f"Fetching item with ID: {item_id}")
             doc = await self.db.get_document("menu_items", {"_id": item_id})
-            if doc:
-                return MenuItemModel(**doc)
-            return None
+            
+            if not doc:
+                logger.warning(f"Item not found with ID: {item_id}")
+                return None
+            
+            logger.info(f"Fetched item with ID: {item_id}")
+            return MenuItemModel(**doc)
+        
         except ValidationError as e:
-            print(f"Validation Error fetching item: {e}")
+            logger.error(f"Validation Error fetching item: {e}")
             raise e
         except PyMongoError as e:
-            print(f"Database Error fetching item: {e}")
+            logger.error(f"Database Error fetching item: {e}")
             raise e
         except Exception as e:
-            print(f"Unknown Error fetching item: {e}")
+            logger.error(f"Unknown Error fetching item: {e}")
             raise e
 
 
@@ -141,18 +159,21 @@ class MenuService:
         items: List[MenuItemModel] = []
 
         try:
+            logger.info("Fetching filtered items")
             for doc in await self.db.get_documents_list("menu_items", query):
                 items.append(MenuItemModel(**doc))
+                
+            logger.info(f"Fetched {len(items)} filtered items")
             return items
                 
         except ValidationError as e:
-            print(f"Validation Error fetching filtered items: {e}")
+            logger.error(f"Validation Error fetching filtered items: {e}")
             raise e
         except PyMongoError as e:
-            print(f"Database Error fetching filtered items: {e}")
+            logger.error(f"Database Error fetching filtered items: {e}")
             raise e
         except Exception as e:
-            print(f"Unknown Error fetching filtered items: {e}")
+            logger.error(f"Unknown Error fetching filtered items: {e}")
             raise e
                 
     
@@ -168,13 +189,17 @@ class MenuService:
             Exception: If an unexpected error occurs.
         """
         try:
+            logger.info("Counting categories")
             count = await self.db.count_documents("categories")
+            
+            logger.info(f"Total categories: {count}")
             return count
+        
         except PyMongoError as e:
-            print(f"Database error counting categories: {e}")
+            logger.error(f"Database error counting categories: {e}")
             raise
         except Exception as e:
-            print(f"Unexpected error counting categories: {e}")
+            logger.error(f"Unexpected error counting categories: {e}")
             raise
 
     
@@ -190,11 +215,16 @@ class MenuService:
             Exception: If an unexpected error occurs.
         """
         try:
+            logger.info("Counting items")
             count = await self.db.count_documents("menu_items")
+            
+            logger.info(f"Total items: {count}")
             return count
+        
         except PyMongoError as e:
-            print(f"Database error counting items: {e}")
+            logger.error(f"Database error counting items: {e}")
             raise
+        
         except Exception as e:
-            print(f"Unexpected error counting items: {e}")
+            logger.error(f"Unexpected error counting items: {e}")
             raise

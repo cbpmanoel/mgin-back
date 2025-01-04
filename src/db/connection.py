@@ -141,6 +141,7 @@ class DBConnection:
             count = await collection.count_documents(query)
             logger.info(f"Counted {count} documents in collection: {collection_name}")
             return count
+        
         except PyMongoError as e:
             logger.error(f"Database error counting documents in {collection_name}: {e}")
             raise
@@ -169,6 +170,7 @@ class DBConnection:
             doc = await collection.find_one(query)
             logger.info(f"Retrieved document from collection: {collection_name}")
             return doc
+        
         except PyMongoError as e:
             logger.error(f"Database error fetching document from {collection_name}: {e}")
             raise
@@ -209,6 +211,7 @@ class DBConnection:
             docs = await cursor.to_list()
             logger.info(f"Retrieved {len(docs)} documents from collection: {collection_name}")
             return docs
+        
         except PyMongoError as e:
             logger.error(f"Database error fetching documents from {collection_name}: {e}")
             raise
@@ -236,6 +239,7 @@ class DBConnection:
             result = await self.db[collection_name].insert_one(data)
             logger.info(f"Inserted document into collection: {collection_name}")
             return str(result.inserted_id)
+        
         except PyMongoError as e:
             logger.error(f"Database error inserting document into {collection_name}: {e}")
             raise
