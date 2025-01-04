@@ -54,3 +54,14 @@ async def get_filtered_items(model: ItemRequestFilterModel, service: MenuService
         return {'data': items}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@_router.get("/item/{item_id}")
+async def get_item(item_id: int, service: MenuService = Depends(get_menu_service)) -> dict:
+    '''
+    Get Item by ID
+    '''
+    try:
+        item = await service.get_item(item_id)
+        return {'data': item}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

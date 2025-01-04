@@ -63,6 +63,30 @@ class MenuService:
         except Exception as e:
             print(f"Unknown Error fetching categories: {e}")
             raise e
+        
+        
+    async def get_item(self, item_id: int) -> MenuItemModel:
+        """
+        Get Item by ID
+        
+        Args:
+            item_id (int): Item ID
+        
+        Returns:
+            MenuItemModel: Item
+        """
+        try:
+            item: MenuItemModel = await self.db.get_document("menu_items", item_id)
+            return item
+        except ValidationError as e:
+            print(f"Validation Error fetching item: {e}")
+            raise e
+        except PyMongoError as e:
+            print(f"Database Error fetching item: {e}")
+            raise e
+        except Exception as e:
+            print(f"Unknown Error fetching item: {e}")
+            raise e
 
 
     async def get_filtered_items(
