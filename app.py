@@ -19,9 +19,9 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 # Add the endpoint routers
-app.include_router("/image", image_router())
-app.include_router("/menu", menu_router())
-app.include_router("/order", orders_router())
+app.include_router(image_router())
+app.include_router(menu_router())
+app.include_router(orders_router())
 
 
 if __name__ == "__main__":
