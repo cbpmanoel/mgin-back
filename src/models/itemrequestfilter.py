@@ -4,9 +4,9 @@ from typing import Optional
 class ItemRequestFilterModel(BaseModel):
     ''' Model for item request filter '''
     name: Optional[str]                 = Field(None, title="Item name")
-    category_id: Optional[int]          = Field(description="Category ID")
-    price_from: Optional[PositiveFloat] = Field(description="Price From")
-    price_to: Optional[PositiveFloat]   = Field(description="Price To")
+    category_id: Optional[int]          = Field(None, description="Category ID")
+    price_from: Optional[PositiveFloat] = Field(None, description="Price From")
+    price_to: Optional[PositiveFloat]   = Field(None, description="Price To")
     
     # Validate attributes
     @model_validator(mode="after")
