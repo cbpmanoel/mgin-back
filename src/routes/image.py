@@ -9,19 +9,31 @@ _router = APIRouter(prefix="/image", tags=["Image"])
 def get_router():
     return _router
 
-# Route: /image
-@_router.get("")
+@_router.get("", summary="Get Image", description="Retrieve an image by its filename.")
 async def get_image(image: str):
-    '''
-    Return the image
-    '''
+    """
+    Retrieve an image by its filename.
+
+    Args:
+        image (str): The filename of the image (must end with `.jpg`).
+
+    Returns:
+        FileResponse: The image file as a response with media type `image/jpeg`.
+
+    Raises:
+        HTTPException (400): If the image filename does not end with `.jpg`.
+        HTTPException (404): If the image file is not found.
+    """
+    # Validate image format
     if not image.endswith(".jpg"):
         raise HTTPException(status_code=400, detail="Invalid Image format. Accepted format: .jpg")
     
+    # Get the absolute path of the image
     image_path = get_image_abspath(image)
     
+    # Return the image if found
     if image_path:
         return FileResponse(image_path, media_type="image/jpeg", filename=image)
     
+    # Raise 404 if the image is not found
     raise HTTPException(status_code=404, detail="Image not found")
-    
