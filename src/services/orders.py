@@ -2,7 +2,8 @@ from typing import List, Optional
 from pydantic import ValidationError
 from pymongo.errors import PyMongoError
 from ..db import DBConnection
-from ..models.order import OrderModel, StoredOrderModel
+from ..models.order import OrderModel
+from bson import ObjectId
 
 class OrderService:
     def __init__(self, db: DBConnection):
@@ -21,6 +22,10 @@ class OrderService:
         '''
         
         try:
+            # Convert dict to OrderModel
+            if isinstance(order, dict):
+                order = OrderModel(**order)
+            
             order_id = await self.db.insert_one("orders", order.model_dump())
             return order_id
         
@@ -35,18 +40,21 @@ class OrderService:
             raise e
         
         
-    async def get_orders(self) -> List[StoredOrderModel]:
+    async def get_orders(self) -> List[OrderModel]:
         '''
         Get Orders from the database
         
         Returns:
-            List[StoredOrderModel]: List of Orders
+            List[OrderModel]: List of Orders
         '''
         
         try:
-            orders: List[StoredOrderModel] = []
+            orders: List[OrderModel] = []
             for doc in await self.db.get_documents_list("orders"):
-                orders.append(StoredOrderModel(**doc))
+                if doc:  
+                    # Convert dict to OrderModel       
+                    docToStore = OrderModel(**doc) if isinstance(doc, dict) else doc
+                    orders.append(docToStore)
             return orders
         
         except ValidationError as e:
@@ -60,7 +68,7 @@ class OrderService:
             raise e
         
         
-    async def get_order(self, order_id: int) -> Optional[StoredOrderModel]:
+    async def get_order(self, order_id: str) -> Optional[OrderModel]:
         '''
         Get Order by ID
         
@@ -68,11 +76,11 @@ class OrderService:
             order_id (int): Order ID
         
         Returns:
-            Optional[StoredOrderModel]: Order Object
+            Optional[OrderModel]: Order Object
         '''
         try:
-            doc = await self.db.get_document("orders", {"id": order_id})
-            return StoredOrderModel(**doc) if doc else None
+            doc = await self.db.get_document("orders", {"_id": ObjectId(order_id)})
+            return OrderModel(**doc) if doc else None
         
         except ValidationError as e:
             print(f"Validation Error fetching order: {e}")

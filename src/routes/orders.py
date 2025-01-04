@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from ..models.order import OrderModel, StoredOrderModel
+from ..models.order import OrderModel
 from ..services.orders import OrderService
 from ..services.dependencies import get_order_service
 
@@ -29,7 +29,7 @@ async def get_orders(service: OrderService = Depends(get_order_service)) -> dict
     '''
     Get Orders
     '''
-    orders: List[StoredOrderModel] = []
+    orders: List[OrderModel] = []
     try:
         orders = await service.get_orders()
         return {'data': orders}
@@ -46,7 +46,7 @@ async def get_order(order_id: str, service: OrderService = Depends(get_order_ser
     order_id (str): Order ID
     '''
     try:
-        order: StoredOrderModel = await service.get_order(order_id)
+        order: OrderModel = await service.get_order(order_id)
         return {'data': order}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

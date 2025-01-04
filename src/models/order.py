@@ -1,9 +1,10 @@
-from pydantic import BaseModel, Field
-from typing import List, Union
+from pydantic import BaseModel, Field, PositiveFloat, field_validator
+from typing import List
 from typing_extensions import Annotated
-from datetime import datetime
 from .payment import PaymentBaseModel, payment_models
 from .menuitem import MenuItemModel
+from bson.objectid import ObjectId as BsonObjectId
+
 
 def _validate_payment_type(payment: PaymentBaseModel) -> PaymentBaseModel:
     '''
@@ -24,19 +25,24 @@ def _validate_payment_type(payment: PaymentBaseModel) -> PaymentBaseModel:
     
     raise ValueError("Invalid Payment Type")
 
+
 class ItemOnOrderModel(BaseModel):
     ''' Item on Order Model '''
     item: MenuItemModel = Field(description="Item")
     quantity: int = Field(description="Quantity")
-    price_at_order: float = Field(description="Price at Order")
+    price_at_order: PositiveFloat = Field(description="Price at Order")
 
 class OrderModel(BaseModel):
     ''' Order Model '''
-    total: float = Field(description="Total")
+    id: str = Field(None, description="Order Id", alias="_id")
+    total: PositiveFloat = Field(description="Total")
     created_at: str = Field(description="Created At")
     items: List[ItemOnOrderModel] = Field(description="Items")
     payment: Annotated[PaymentBaseModel, _validate_payment_type] = Field(description="Payment")
 
-class StoredOrderModel(OrderModel):
-    ''' Stored Order Model '''
-    id: int = Field(description="ID")
+    @field_validator('id', mode='before')
+    def _validate_id(cls, value):
+        ''' Convert ObjectId to string '''
+        if isinstance(value, BsonObjectId):
+            return str(value)
+        return value
