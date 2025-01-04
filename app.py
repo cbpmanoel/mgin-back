@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from .src.routes.image import get_router as image_router
-from .src.routes.menu import get_router as menu_router
-from .src.routes.orders import get_router as orders_router
+from src.routes.image import get_router as image_router
+from src.routes.menu import get_router as menu_router
+from src.routes.orders import get_router as orders_router
 from fastapi_metadata import metadata
 
 # FastAPI object
