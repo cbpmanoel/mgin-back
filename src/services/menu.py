@@ -8,7 +8,6 @@ from ..models.itemrequestfilter import ItemRequestFilterModel
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -117,7 +116,7 @@ class MenuService:
         """
         try:
             logger.info(f"Fetching item with ID: {item_id}")
-            doc = await self.db.get_document("menu_items", {"_id": item_id})
+            doc = await self.db.get_document("menu_items", {"id": item_id})
             
             if not doc:
                 logger.warning(f"Item not found with ID: {item_id}")

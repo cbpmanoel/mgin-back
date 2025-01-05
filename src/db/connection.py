@@ -4,7 +4,6 @@ from pymongo.errors import PyMongoError, ConnectionFailure
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 

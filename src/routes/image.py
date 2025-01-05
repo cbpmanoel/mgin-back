@@ -4,7 +4,6 @@ from ..utils.image_utils import get_image_abspath
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Define the router

@@ -5,7 +5,6 @@ from src.services.dependencies import get_menu_service
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Define the router
