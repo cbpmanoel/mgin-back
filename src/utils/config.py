@@ -16,7 +16,7 @@ logging.basicConfig(
 )
 
 # Uvicorn settings
-UVICORN_HOST = os.getenv('UVICORN_HOST', 'localhost')
+UVICORN_HOST = os.getenv('UVICORN_HOST', '0.0.0.0')
 UVICORN_PORT = int(os.getenv('UVICORN_PORT', 8000))
 UVICORN_LOG_LEVEL = os.getenv('UVICORN_LOG_LEVEL', 'info').lower()
 UVICORN_RELOAD = os.getenv('UVICORN_RELOAD', 'false').lower() == 'true'
