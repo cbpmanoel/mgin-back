@@ -13,14 +13,14 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongodb_data:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - ./init-data.json:/data/init-data.json:ro
+      - ./resources/database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./resources/database/init-data.json:/data/init-data.json:ro
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
       interval: 10s
       timeout: 10s
       retries: 3
-      start_period: 20s
+      start_period: 30s
 
   # Mongo-Express Service
   mongo-express:
