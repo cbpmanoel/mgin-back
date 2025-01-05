@@ -92,6 +92,7 @@ class DBConnection:
         logger.info(f"Connecting to MongoDB at {self.url}")
         try:
             # Connect to the MongoDB server
+            print(f'Connecting to MongoDB at {self.url}')
             self.client = AsyncIOMotorClient(
                 self.url,
                 connectTimeoutMS=self.connect_timeout,
@@ -100,6 +101,7 @@ class DBConnection:
             
             # Test the connection by pinging the admin database
             await self.client.admin.command('ping')
+            print('Connected to MongoDB')
             
             # Set the database
             self.db = self.client[self.db_name]
