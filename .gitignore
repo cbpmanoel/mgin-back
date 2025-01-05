@@ -9,3 +9,6 @@ env/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Custom untracked files and directories
+untracked/
