@@ -1,5 +1,5 @@
 from .connection import DBConnection
-from ..utils.env_dependencies import get_db_settings
+from ..utils.config import get_db_settings
 
 
 async def get_db() -> DBConnection:
