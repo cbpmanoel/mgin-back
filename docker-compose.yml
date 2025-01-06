@@ -45,7 +45,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: kiosk-app
+    container_name: kiosk-api
     restart: unless-stopped
     ports:
       - "8000:8000"
