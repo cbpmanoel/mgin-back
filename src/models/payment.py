@@ -12,7 +12,7 @@ class PaymentBaseModel(BaseModel):
     amount: PositiveFloat = Field(description="Amount")
 
 
-class PaymentCardModel(PaymentBaseModel):
+class CardPaymentModel(PaymentBaseModel):
     ''' Payment Card Model '''
     card_number: str = Field(description="Card Number")
     card_holder: str = Field(description="Card Holder")
@@ -20,18 +20,10 @@ class PaymentCardModel(PaymentBaseModel):
     cvv: str = Field(description="CVV")
 
 
-class PaymentPixModel(PaymentBaseModel):
+class PixPaymentModel(PaymentBaseModel):
     ''' Payment PIX Model '''
-    buyer_name: str = Field(description="Buyer Name")
-    key: str = Field(description="PIX Key")
+    client_name: str = Field(description="Client Name")
+    client_id: str = Field(description="Client Id")
+    pix_code: str = Field(description="PIX EMV Code")
+    created_at: str = Field(description="Created At")
     expiration_date: str = Field(description="Expiration Date")
-
-
-def payment_models():
-    '''
-    Return the valid payment models
-
-    Returns:
-    dict: Payment Models
-    '''
-    return PaymentCardModel, PaymentPixModel
