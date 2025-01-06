@@ -19,8 +19,8 @@ def get_router():
     """
     return _router
 
-@_router.get("", summary="Get Image", description="Retrieve an image by its filename.")
-async def get_image(image: str):
+@_router.get("/{image_file}", summary="Get Image", description="Retrieve an image by its filename.")
+async def get_image(image_file: str):
     """
     Retrieve an image by its filename.
 
@@ -34,20 +34,20 @@ async def get_image(image: str):
         HTTPException (400): If the image filename does not end with `.jpg`.
         HTTPException (404): If the image file is not found.
     """
-    logger.info(f"Received request to retrieve image: {image}")
+    logger.info(f"Received request to retrieve image: {image_file}")
 
     # Validate image format
-    if not image.endswith(".jpg"):
-        logger.error(f"Invalid image format for file: {image}")
+    if not image_file.endswith(".jpg"):
+        logger.error(f"Invalid image format for file: {image_file}")
         raise HTTPException(status_code=400, detail="Invalid Image format. Accepted format: .jpg")
     
     # Get the absolute path of the image
-    image_path = get_image_abspath(image)
+    image_path = get_image_abspath(image_file)
     logger.debug(f"Resolved image path: {image_path}")
     
     # Raise 404 if the image is not found
     if not image_path:
-        logger.error(f"Image not found: {image}")
+        logger.error(f"Image not found: {image_file}")
         raise HTTPException(status_code=404, detail="Image not found")
     
     # Add caching headers to the response
@@ -55,10 +55,10 @@ async def get_image(image: str):
         "Cache-Control": "public, max-age=31536000",
     }
     
-    logger.info(f"Serving image: {image}")
+    logger.info(f"Serving image: {image_file}")
     return FileResponse(
         image_path,
         media_type="image/jpeg",
-        filename=image,
+        filename=image_file,
         headers=headers,
     )
