@@ -50,5 +50,15 @@ async def get_image(image: str):
         logger.error(f"Image not found: {image}")
         raise HTTPException(status_code=404, detail="Image not found")
     
+    # Add caching headers to the response
+    headers = {
+        "Cache-Control": "public, max-age=31536000",
+    }
+    
     logger.info(f"Serving image: {image}")
-    return FileResponse(image_path, media_type="image/jpeg", filename=image)
+    return FileResponse(
+        image_path,
+        media_type="image/jpeg",
+        filename=image,
+        headers=headers,
+    )
