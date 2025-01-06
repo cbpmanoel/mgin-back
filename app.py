@@ -15,12 +15,6 @@ logger = logging.getLogger(__name__)
 # FastAPI object
 app = FastAPI(**metadata)
 
-# CORS middleware - Allow requests from the frontend
-origins = [
-    "http://127.0.0.1:5173",
-    "http://localhost:5173"
-]
-
 # Add the CORS middleware
 app.add_middleware(
     CORSMiddleware,
