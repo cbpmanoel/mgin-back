@@ -2,6 +2,7 @@ import logging
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from src.utils.config import UVICORN_LOG_LEVEL, UVICORN_RELOAD, UVICORN_HOST, UVICORN_PORT
 from src.routes.image import get_router as image_router
 from src.routes.menu import get_router as menu_router
@@ -12,7 +13,22 @@ from fastapi_metadata import metadata
 logger = logging.getLogger(__name__)
 
 # FastAPI object
-app = FastAPI(prefix="/api/v1", **metadata)
+app = FastAPI(**metadata)
+
+# CORS middleware - Allow requests from the frontend
+origins = [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173"
+]
+
+# Add the CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Configure the exception handlers
 @app.exception_handler(RequestValidationError)
