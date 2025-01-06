@@ -2,7 +2,7 @@
 const fs = require('fs');
 
 // Get the database name from the environment variable
-const dbName = process.env.MONGO_DB_NAME || 'test_db';
+const dbName = process.env["MONGO_DB_NAME"] || "test_db";
 
 let data;
 try {
