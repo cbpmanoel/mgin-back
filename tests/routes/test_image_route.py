@@ -44,7 +44,7 @@ async def test_get_image_success(mock_image_file, mock_image_utils):
     mock_image_utils.return_value = str(mock_image_file)
 
     # Make the request
-    response = client.get("/image?image=test_image.jpg")
+    response = client.get("/image/test_image.jpg")
 
     # Assertions
     assert response.status_code == 200
@@ -66,7 +66,7 @@ async def test_get_image_missing_image_id():
 async def test_get_image_invalid_format():
     """Test retrieval with an invalid image format."""
     # Make the request with an invalid image format
-    response = client.get("/image?image=test_image.png")
+    response = client.get("/image/test_image.png")
 
     # Assertions
     assert response.status_code == 400
@@ -79,7 +79,7 @@ async def test_get_image_not_found(mock_image_utils):
     mock_image_utils.return_value = None
 
     # Make the request
-    response = client.get("/image?image=non_existent_image.jpg")
+    response = client.get("/image/non_existent_image.jpg")
 
     # Assertions
     assert response.status_code == 404
