@@ -70,6 +70,8 @@ The application is organized into the following key directories and files:
 
 ## Quick Start
 
+The following steps will help you set up the application quickly using Docker. The MongoDB database will be populated with sample data located in `resources/init-data.json`.
+
 1. Clone the repository:
     ```sh
     git clone https://github.com/cbpmanoel/mgin-back.git
@@ -83,7 +85,7 @@ The application is organized into the following key directories and files:
     docker-compose up --build -d
     ```
 
-4. Access the API documentation at `http://localhost:8000/docs`.
+4. Access the API documentation at `http://localhost:8000/docs` (Swagger).
 
 5. Access the database management at `http://localhost:8081` (Mongo-Express).
 
