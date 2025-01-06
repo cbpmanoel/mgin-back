@@ -1,5 +1,9 @@
 // Read the JSON file synchronously
 const fs = require('fs');
+
+// Get the database name from the environment variable
+const dbName = process.env.MONGO_DB_NAME || 'test_db';
+
 let data;
 try {
     data = JSON.parse(fs.readFileSync('/data/init-data.json', 'utf8'));
@@ -9,7 +13,8 @@ try {
 }
 
 // Connect to the database
-db = db.getSiblingDB('kiosk_db');
+print('Connecting to the database:', dbName);
+db = db.getSiblingDB(dbName);
 
 // Insert categories
 if (data.categories && data.categories.length > 0) {
