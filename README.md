@@ -17,8 +17,7 @@ The **MGin Kiosk API** is a backend application built with **FastAPI** to manage
 - [Testing](#testing)
 - [Environment Variables](#environment-variables)
 - [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
+- [Contributing](#contributing)W
 
 ## Key Features
 
