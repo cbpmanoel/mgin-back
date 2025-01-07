@@ -94,21 +94,7 @@ The following steps will help you quickly set up the application using Docker. M
     - [http://localhost:8081](http://localhost:8081)
 
 ### Non-Docker Setup
-If you prefer not to use Docker, follow these steps:
-
-1. Install the required dependencies:
-    ```sh
-    pip install -r requirements.txt
-    ```
-
-2. Start MongoDB locally and update the `.env` file to match your local configuration.
-
-3. Run the FastAPI application:
-    ```sh
-    python app.py
-    ```
-
-4. Access the documentation as mentioned above.
+If you prefer not to use Docker, proceed to [Installation](#installation) and [Usage](#usage) steps.
 
 ## Dependencies
 
