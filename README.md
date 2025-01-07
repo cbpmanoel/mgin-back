@@ -24,35 +24,33 @@ The **MGin Kiosk API** is a backend application built with **FastAPI** to manage
 
 ### **FastAPI Backend**
 
-- **Automatic Documentation**: Interactive API documentation is available at `/docs` and `/redoc`.
-- **Data Validation**: Uses **Pydantic** models for request and response validation.
-- **Modular Design**: Organized into routes, services, models, and utilities for maintainability.
+- **Automatic Documentation**: Interactive API documentation is available at `/docs` (Swagger) and `/redoc` (ReDoc).
+- **Data Validation**: Built with **Pydantic** for validating request and response payloads.
+- **Modular Design**: Organized into distinct components like routes, services, models, and utilities for better maintainability.
 
 ### **MongoDB Integration**
 
-- Stores menu items, categories, and orders.
-- Uses **Motor** for asynchronous database operations.
-- Initializes with sample data via [mongo-init.js](mongo-init.js) and [init-data.json](init-data.json).
+- Stores data for menu items, categories, and orders.
+- Uses **Motor** for seamless asynchronous database operations.
+- Initializes sample data using [mongo-init.js](mongo-init.js) and [init-data.json](init-data.json).
 
 ### **API Functionality**
 
-The API provides the following core functionalities:
+The API supports the following core features:
 
 #### **Menu Management**
-
 - Retrieve the total number of menu items and categories.
-- Fetch a list of all categories or items within a specific category.
-- Filter and search for menu items based on customizable criteria.
-- Retrieve detailed information about a specific menu item by its ID.
+- Fetch a list of all categories or specific items within a category.
+- Filter and search for menu items based on custom criteria.
+- Retrieve detailed information for a specific menu item by its ID.
 
 #### **Order Management**
-
-- Create new orders with ease, supporting structured and validated order data.
-- Retrieve a list of all orders or fetch a specific order by its ID.
+- Create new orders with structured, validated data.
+- Fetch all orders or retrieve a specific order by its ID.
 
 #### **Image Handling**
+- Serve static images dynamically for displaying product visuals in the kiosk interface.
 
-- Serve static images (e.g., JPG files) dynamically, allowing the kiosk to display product images seamlessly.
 
 ## Application Structure
 
@@ -73,26 +71,44 @@ The application is organized into the following key directories and files:
 
 ## Quick Start
 
-The following steps will help you set up the application quickly using Docker. The MongoDB database will be populated with sample data located in `resources/init-data.json`.
+The following steps will help you quickly set up the application using Docker. MongoDB will be automatically initialized with sample data located in `resources/init-data.json`.
 
 1. Clone the repository:
-
     ```sh
     git clone https://github.com/cbpmanoel/mgin-back.git
     cd mgin-kiosk-api
     ```
 
-2. Set up the `.env` file (see [Environment Variables](#environment-variables)).
+2. Set up the `.env` file (refer to the [Environment Variables](#environment-variables) section for required configurations).
 
-3. Start the services:
-
+3. Start the application with Docker:
     ```sh
     docker-compose up --build -d
     ```
 
-4. Access the API documentation at `http://localhost:8000/docs` (Swagger).
+4. Access the FastAPI documentation:
+    - **Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
+    - **ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
-5. Access the database management at `http://localhost:8081` (Mongo-Express).
+5. Optional: Access the Mongo-Express interface for managing the database:
+    - [http://localhost:8081](http://localhost:8081)
+
+### Non-Docker Setup
+If you prefer not to use Docker, follow these steps:
+
+1. Install the required dependencies:
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+2. Start MongoDB locally and update the `.env` file to match your local configuration.
+
+3. Run the FastAPI application:
+    ```sh
+    python app.py
+    ```
+
+4. Access the documentation as mentioned above.
 
 ## Dependencies
 
@@ -107,6 +123,8 @@ Install Python dependencies:
 ```sh
 pip install -r requirements.txt
 ```
+
+**The current version has been developed and tested on Ubuntu 20.04 Desktop and Ubuntu 22.04 (WSL2).**
 
 ## Installation
 
@@ -211,8 +229,9 @@ ME_CONFIG_BASICAUTH_PASSWORD=password # Basic auth password for Mongo-Express
   - Check logs with `docker-compose logs mongodb`.
 - **API fails to start**:
   - Verify the `.env` file is correctly configured.
+  - Rebuild the container if the `.env` file changes.
   - Verify if the FastAPI port is used by another process.
-  - If running inside container:
+  - If running inside a container:
     - Check logs with `docker-compose logs app`.
     - Rerun the container with `docker-compose up --build`.
 
@@ -225,9 +244,3 @@ Contributions are welcome! Follow these steps:
 1. Fork the repository.
 2. Create a new branch for your feature or bugfix.
 3. Submit a pull request with a detailed description of your changes.
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
