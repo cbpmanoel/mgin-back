@@ -76,7 +76,7 @@ The following steps will help you quickly set up the application using Docker. M
 1. Clone the repository:
     ```sh
     git clone https://github.com/cbpmanoel/mgin-back.git
-    cd mgin-kiosk-api
+    cd mgin-back
     ```
 
 2. Set up the `.env` file (refer to the [Environment Variables](#environment-variables) section for required configurations).
