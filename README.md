@@ -31,7 +31,7 @@ The **MGin Kiosk API** is a backend application built with **FastAPI** to manage
 
 - Stores data for menu items, categories, and orders.
 - Uses **Motor** for seamless asynchronous database operations.
-- Initializes sample data using [mongo-init.js](mongo-init.js) and [init-data.json](init-data.json).
+- Initializes sample data using [mongo-init.js](resources/database/mongo-init.js) and [init-data.json](resources/database/init-data.json).
 
 ### **API Functionality**
 
@@ -70,7 +70,7 @@ The application is organized into the following key directories and files:
 
 ## Quick Start
 
-The following steps will help you quickly set up the application using Docker. MongoDB will be automatically initialized with sample data located in `resources/init-data.json`.
+The following steps will help you quickly set up the application using Docker. MongoDB will be automatically initialized with sample data located in `resources/database/init-data.json`.
 
 1. Clone the repository:
     ```sh
@@ -78,7 +78,8 @@ The following steps will help you quickly set up the application using Docker. M
     cd mgin-back
     ```
 
-2. Set up the `.env` file (refer to the [Environment Variables](#environment-variables) section for required configurations).
+2. Set up the `.env` file:
+   Refer to the [Environment Variables](#environment-variables) section for required configurations.
 
 3. Start the application with Docker:
     ```sh
@@ -92,8 +93,6 @@ The following steps will help you quickly set up the application using Docker. M
 5. Optional: Access the Mongo-Express interface for managing the database:
     - [http://localhost:8081](http://localhost:8081)
 
-### Non-Docker Setup
-If you prefer not to use Docker, proceed to [Installation](#installation) and [Usage](#usage) steps.
 
 ## Dependencies
 
@@ -113,6 +112,8 @@ pip install -r requirements.txt
 
 ## Installation
 
+1. (Optional) Install [pyenv](https://github.com/pyenv/pyenv-installer) for Python version management.
+
 1. Create and activate a virtual environment:
 
     ```sh
@@ -128,9 +129,55 @@ pip install -r requirements.txt
 
 3. Set up the `.env` file (see [Environment Variables](#environment-variables)).
 
+
+#### (Optional) MongoDB Local Installation and Initialization
+
+If you prefer to run MongoDB locally instead of using Docker, you can install it via the official MongoDB repository:
+
+1. Use the provided [`mongodb_install_local.sh`](mongodb_install_local.sh) script:
+   ```bash
+   chmod +x mongodb_install_local.sh
+   sudo ./mongodb_install_local.sh
+   ```
+
+   This installs MongoDB with the default root username `root` and password `root`. For more options, run:
+   ```bash
+   ./mongodb_install_local.sh --help
+   ```
+
+2. Install the required Python dependencies for MongoDB populate database script:
+   ```bash
+   pip install pymongo python-dotenv
+   ```
+
+3. Run the [`mongodb_populate.py`](mongodb_populate.py) script:
+   ```bash
+   python mongodb_populate.py
+   ```
+
+   - **Default Behavior**: If no file is specified, the script uses `resources/database/init-data.json` to populate the database.
+   - Default MongoDB connection settings:
+     - **Host**: `localhost`
+     - **Port**: `27017`
+     - **Database**: `test_db`
+     - **Username**: `root`
+     - **Password**: `example`
+
+3. For more options, run:
+   ```bash
+   python mongodb_populate.py --help
+   ```
+
+4. Verify the populated database using the MongoDB shell (`mongosh`) or a GUI tool like MongoDB Compass.
+
+#### Notes:
+- The default [`init-data.json`](resources/database/init-data.json) file contains sample data for menu items and categories. If no custom file is specified, this data will be used.
+- The `.env` file must be updated with the correct MongoDB connection settings for the API to work properly. Make sure the values for MongoDB related settings match the database configuration.
+
+
 ## Usage
 
-1. Start MongoDB and Mongo-Express:
+1. Start MongoDB and Mongo-Express containers, if using Docker:
 
     ```sh
     docker-compose up mongodb mongo-express -d
@@ -142,7 +189,7 @@ pip install -r requirements.txt
     python app.py
     ```
 
-3. Access the API documentation at `http://localhost:8000/docs`.
+3. Access the API documentation at `http://localhost:8000/docs` or `http://localhost:8000/redoc`.
 
 ## API Endpoints
 
@@ -184,26 +231,26 @@ The following environment variables are required to configure the application. C
 
 ```env
 # Database settings used by the API
-MONGO_DB_NAME=test_db          # Name of the MongoDB database
-MONGO_HOST=localhost           # MongoDB host address - If running in a container, use the service name
-MONGO_PORT=27017               # MongoDB port
-MONGO_USERNAME=root            # MongoDB username
-MONGO_PASSWORD=example         # MongoDB password
+MONGO_DB_NAME=test_db
+MONGO_HOST=localhost
+MONGO_PORT=27017
+MONGO_USERNAME=root
+MONGO_PASSWORD=example
 
 # API settings
-LOG_LEVEL=info                 # Logging level (e.g., info, debug)
-UVICORN_LOG_LEVEL=info         # Uvicorn logging level
-UVICORN_RELOAD=false           # Enable/disable auto-reload for development
+LOG_LEVEL=info
+UVICORN_LOG_LEVEL=info
+UVICORN_RELOAD=false
 
 # MongoDB Initialization
-MONGO_INITDB_ROOT_USERNAME=root  # Root username for MongoDB initialization
-MONGO_INITDB_ROOT_PASSWORD=example  # Root password for MongoDB initialization
+MONGO_INITDB_ROOT_USERNAME=root
+MONGO_INITDB_ROOT_PASSWORD=example
 
 # Mongo-Express Settings
-ME_CONFIG_MONGODB_ADMINUSERNAME=root  # Admin username for Mongo-Express
-ME_CONFIG_MONGODB_ADMINPASSWORD=example  # Admin password for Mongo-Express
-ME_CONFIG_BASICAUTH_USERNAME=admin    # Basic auth username for Mongo-Express
-ME_CONFIG_BASICAUTH_PASSWORD=password # Basic auth password for Mongo-Express
+ME_CONFIG_MONGODB_ADMINUSERNAME=root
+ME_CONFIG_MONGODB_ADMINPASSWORD=example
+ME_CONFIG_BASICAUTH_USERNAME=admin
+ME_CONFIG_BASICAUTH_PASSWORD=password
 ```
 
 ---
@@ -219,6 +266,18 @@ ME_CONFIG_BASICAUTH_PASSWORD=password # Basic auth password for Mongo-Express
   - If running inside a container:
     - Check logs with `docker-compose logs app`.
     - Rerun the container with `docker-compose up --build`.
+- **API fails to connect to MongoDB**:
+    - Verify the MongoDB connection settings in the `.env` file.
+    - Check the MongoDB logs for any errors.
+    - Ensure the MongoDB container or service is running.
+- **API fails to fetch data from MongoDB**:
+    - Verify the MongoDB data is correctly inserted.
+    - Verify the MongoDB connection settings in the `.env` file.
+    - Check the MongoDB logs for any errors.
+    - If running inside a container:
+        - Check logs with `docker-compose logs app`.
+        - Rerun the container with `docker-compose up --build`.
+        - Verify if the MongoDB host address is set to `mongodb`, which is the name of the MongoDB service.
 
 ---
 
